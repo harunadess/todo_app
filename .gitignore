@@ -1,0 +1,8 @@
+# dirs
+tmp
+node_modules
+assets
+
+# file associations
+*.db
+*.exe

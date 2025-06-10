@@ -1,0 +1,16 @@
+{
+  "name": "todo_app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.8",
+    "tailwindcss": "^4.1.8"
+  },
+  "scripts": {
+    "start": "npx @tailwindcss/cli -i ./styles/input.css -o ./assets/styles.css --watch",
+    "build": "npx @tailwindcss/cli -i ./styles/input.css -o ./assets/styles.css"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

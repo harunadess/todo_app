@@ -1,0 +1,17 @@
+{{ define "row" }}
+<tr>
+  <td>
+    {{ if .HasCount }}
+    {{ .Count }}
+    {{ end }}
+  </td>
+  <td>{{ .Name }}</td>
+  <td><input type="checkbox" value="true" {{ if .Done }} checked {{ end }} /></td>
+  <td>
+    <button hx-get="/todos/{{ .ID }}/edit">Edit</button>
+  </td>
+  <td>
+    <button hx-delete="/todos/{{ .ID }}">Delete</button>
+  </td>
+</tr>
+{{ end }}

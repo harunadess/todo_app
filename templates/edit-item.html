@@ -1,0 +1,13 @@
+{{ define "edit-item" }}
+<tr>
+  <td><input type="number" name="count" value="{{ .Count }}" /></td>
+  <td><input autofocus name="name" value="{{ .Name }}" /></td>
+  <td><input type="checkbox" name="Done" value="true" {{ if .Done }} checked {{ end }} /></td>
+  <td>
+    <button hx-get="/todos/{{ .ID }}">Cancel</button>
+  </td>
+  <td>
+    <button hx-put="/todos/{{ .ID }}" hx-include="closest tr">Save</button>
+  </td>
+</tr>
+{{ end }}

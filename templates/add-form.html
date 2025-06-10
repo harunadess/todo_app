@@ -1,0 +1,40 @@
+{{ define "add-form" }}
+<div class="mt-6 mx-auto max-w-md rounded bg-surface bg-surface-100 dark:bg-dark-surface-100 border-1 border-surface-400 dark:border-dark-surface-400 text-white">
+  <form
+    class="p-6"
+    hx-post="/todos" hx-target="#item-list" hx-swap="beforeend"
+    hx-on::after-request="if(event.detail.successful) this.reset()"
+  >
+    <p class="text-2xl">Todo...</p>
+    <div class="flex flex-col my-4">
+      <label class="block mb-1" for="name">Description</label>
+      <input
+        class="w-3/4 px-2 py-1 border-1 border-surface-500 dark:border-dark-surface-500 rounded-sm"
+        autofocus
+        name="name"
+        type="text"
+        placeholder="Alexandrite..."
+      />
+    </div>
+    <div class="flex flex-col mb-4">
+      <p class="text-md">Has Count?</p>
+      <label class="switch scale-75 -ml-2">
+        <input type="checkbox" name="has-count" value="true">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="flex flex-col mb-6">
+      <label class="block mb-1"  for="Count">Count</label>
+      <input
+        class="w-3/4 px-2 py-1 border-1 border-surface-500 dark:border-dark-surface-500 rounded-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        type="number"
+        name="count"
+        placeholder="50"
+      />
+    </div>
+    <button
+      class="cursor-pointer mx-auto px-4 py-2 rounded font-semibold text-black bg-primary-300 dark:bg-primary-300"
+      type="submit">+ Add</button>
+  </form>
+</div>
+{{ end }}

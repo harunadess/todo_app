@@ -1,0 +1,18 @@
+{{ define "list" }}
+<table>
+  <thead>
+    <tr>
+      <th>Count</th>      
+      <th>Name</th>
+      <th>Done</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="item-list" hx-target="closest tr" hx-swap="outerHTML">
+    {{ range .Todos }}
+      {{ template "row" . }}
+    {{ end }}
+  </tbody>
+</table>
+{{ end }}

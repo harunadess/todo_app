@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme {
+  /* font */
+  --font-notosans: "Noto Sans JP", sans-serif;
+
+  /* dark theme */
+  --color-dark-primary-100: #a83476;
+  --color-dark-primary-200: #b34e84;
+  --color-dark-primary-300: #be6593;
+  --color-dark-primary-400: #c97ba2;
+  --color-dark-primary-500: #d391b1;
+  --color-dark-primary-600: #dda7c0;
+
+  --color-dark-surface-100: #21191e;
+  --color-dark-surface-200: #362e33;
+  --color-dark-surface-300: #4c4549;
+  --color-dark-surface-400: #635c60;
+  --color-dark-surface-500: #7b7579;
+  --color-dark-surface-600: #948f92;
+
+  --color-dark-surface-tonal-100: #2d1d26;
+  --color-dark-surface-tonal-200: #41323a;
+  --color-dark-surface-tonal-300: #574850;
+  --color-dark-surface-tonal-400: #6d6067;
+  --color-dark-surface-tonal-500: #83787e;
+  --color-dark-surface-tonal-600: #9b9297;
+
+  /* light */
+  --color-primary-100: #a83476;
+  --color-primary-200: #a54077;
+  --color-primary-300: #a14a78;
+  --color-primary-400: #9e5379;
+  --color-primary-500: #995c7b;
+  --color-primary-600: #95647c;
+
+  --color-surface-100: #ededed;
+  --color-surface-200: #e0e0e0;
+  --color-surface-300: #d4d4d4;
+  --color-surface-400: #c7c7c7;
+  --color-surface-500: #bbbbbb;
+  --color-surface-600: #afafaf;
+
+  --color-surface-tonal-100: #e8dbe0;
+  --color-surface-tonal-200: #dcd0d5;
+  --color-surface-tonal-300: #d0c6ca;
+  --color-surface-tonal-400: #c4bcbf;
+  --color-surface-tonal-500: #b8b1b4;
+  --color-surface-tonal-600: #ada7a9;
+}
+
+@layer base {
+  body * {
+    font-family: var(--font-notosans);
+  }
+}
+
+@layer components {
+  .switch {
+    @apply relative inline-block w-[60px] h-[32px];
+  }
+
+  .switch input {
+    @apply hidden opacity-0 w-0 h-0;
+  }
+
+  .slider {
+    @apply absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-surface-tonal-300 dark:bg-dark-surface-300 transition rounded-4xl;
+  }
+
+  .slider:before {
+    @apply absolute h-6 w-6 left-1 bottom-1 bg-surface-tonal-400 transition rounded-4xl;
+    content: "";
+    -webkit-transition: .25s;
+    transition: .s;
+  }
+
+  input:checked+.slider {
+    @apply bg-primary-200;
+  }
+
+  input:checked+.slider:before {
+    @apply transform;
+
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+}
