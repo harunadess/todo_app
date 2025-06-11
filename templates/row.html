@@ -1,17 +1,51 @@
 {{ define "row" }}
-<tr>
-  <td>
-    {{ if .HasCount }}
-    {{ .Count }}
-    {{ end }}
-  </td>
-  <td>{{ .Name }}</td>
-  <td><input type="checkbox" value="true" {{ if .Done }} checked {{ end }} /></td>
-  <td>
-    <button hx-get="/todos/{{ .ID }}/edit">Edit</button>
-  </td>
-  <td>
-    <button hx-delete="/todos/{{ .ID }}">Delete</button>
-  </td>
-</tr>
+<div id="task-{{ .ID }}" class="my-4 mx-auto max-w-lg rounded-xl p-6 bg-surface-tonal-200 dark:bg-dark-surface-200 text-white">
+  <div class="grid grid-cols-2">
+    <div>
+      <div class="mb-8">
+        <div class="mb-1">
+          <p class="{{ if .Done }} line-through {{ end }}">
+            {{ .Name }}
+        
+            <span class="{{ if .Done }} line-through {{ end }}">
+              {{ if .HasCount }}<span>(x{{ .Count }})</span>{{ end }}
+            </span>
+          </p>
+        </div>
+        <div class="mb-6">
+          <p class="{{ if .Done }} line-through {{ end }} text-xs">
+            {{ .Description }}
+          </p>
+        </div>
+      </div>
+      <div class="pt-8">
+        <button class="cursor-pointer mx-auto px-4 py-2 mr-2 rounded text-black bg-primary-100 dark:bg-primary-600"
+          hx-get="/todos/{{ .ID }}/edit">
+          Edit
+        </button>
+        <button class="cursor-pointer mx-auto px-4 py-2 rounded text-black bg-primary-300 dark:bg-primary-300"
+          hx-delete="/todos/{{ .ID }}" hx-target="#task-{{ .ID }}">
+          Delete
+        </button>
+      </div>
+    </div>
+    <div>
+      {{ if .Done }}
+        <button
+          class="relative float-end cursor-pointer mx-auto px-4 py-2 mr-2 rounded text-black bg-primary-300 dark:bg-primary-300"
+          hx-put="/todos/{{ .ID }}/toggle-done?done=false"
+        >
+          ✔
+        </button>
+      {{ else if not .Done }}
+        <button
+          class="relative float-end cursor-pointer mx-auto px-4 py-2 mr-2 rounded text-black bg-primary-100 dark:bg-primary-600"
+          hx-put="/todos/{{ .ID }}/toggle-done?done=true"
+        >
+          ✖
+        </button>
+      {{ end }}
+    </div>
+  </div>
+</div>
 {{ end }}

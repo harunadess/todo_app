@@ -12,19 +12,19 @@
   --color-dark-primary-500: #d391b1;
   --color-dark-primary-600: #dda7c0;
 
-  --color-dark-surface-100: #21191e;
-  --color-dark-surface-200: #362e33;
-  --color-dark-surface-300: #4c4549;
-  --color-dark-surface-400: #635c60;
-  --color-dark-surface-500: #7b7579;
-  --color-dark-surface-600: #948f92;
+  --color-dark-surface-100: #171214;
+  --color-dark-surface-200: #2c2829;
+  --color-dark-surface-300: #433f40;
+  --color-dark-surface-400: #5b5758;
+  --color-dark-surface-500: #747172;
+  --color-dark-surface-600: #8e8b8c;
 
-  --color-dark-surface-tonal-100: #2d1d26;
-  --color-dark-surface-tonal-200: #41323a;
-  --color-dark-surface-tonal-300: #574850;
-  --color-dark-surface-tonal-400: #6d6067;
-  --color-dark-surface-tonal-500: #83787e;
-  --color-dark-surface-tonal-600: #9b9297;
+  --color-dark-surface-tonal-100: #24171d;
+  --color-dark-surface-tonal-200: #392c32;
+  --color-dark-surface-tonal-300: #4f4348;
+  --color-dark-surface-tonal-400: #665b5f;
+  --color-dark-surface-tonal-500: #7d7478;
+  --color-dark-surface-tonal-600: #968e91;
 
   /* light */
   --color-primary-100: #a83476;

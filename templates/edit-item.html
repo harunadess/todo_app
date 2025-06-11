@@ -1,5 +1,5 @@
 {{ define "edit-item" }}
-<tr>
+<!-- <tr>
   <td><input type="number" name="count" value="{{ .Count }}" /></td>
   <td><input autofocus name="name" value="{{ .Name }}" /></td>
   <td><input type="checkbox" name="Done" value="true" {{ if .Done }} checked {{ end }} /></td>
@@ -9,5 +9,31 @@
   <td>
     <button hx-put="/todos/{{ .ID }}" hx-include="closest tr">Save</button>
   </td>
-</tr>
+</tr> -->
+<div class="my-4 mx-auto max-w-lg rounded-2xl p-6 bg-surface-tonal-200 dark:bg-dark-surface-200 text-white">
+  <div class="mb-1">
+    <p class="{{ if .Done }} line-through {{ end }}">
+      {{ .Name }}
+
+      <span class="{{ if .Done }} line-through {{ end }}">
+        {{ if .HasCount }}<span>(x{{ .Count }})</span>{{ end }}
+      </span>
+    </p>
+  </div>
+  <div class="mb-6">
+    <p class="{{ if .Done }} line-through {{ end }} text-xs">
+      {{ .Description }}
+    </p>
+  </div>
+  <div>
+    <button class="cursor-pointer mx-auto px-4 py-2 mr-2 rounded text-black bg-primary-100 dark:bg-primary-600"
+      hx-get="/todos/{{ .ID }}">
+      Cancel
+    </button>
+    <button class="cursor-pointer mx-auto px-4 py-2 rounded text-black bg-primary-300 dark:bg-primary-300"
+      hx-put="/todos/{{ .ID }}">
+      Save
+    </button>
+  </div>
+</div>
 {{ end }}

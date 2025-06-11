@@ -13,10 +13,11 @@ import (
 
 // var db DB
 
-var todoCount = 2
+var todoCount = 3
 var todos = []Todo{
-	{1, "Get eggs", false, true, 5},
-	{2, "Get milk", true, false, 0},
+	{1, "Get eggs", "Can get from store", false, true, 5},
+	{2, "Get milk", "", true, false, 0},
+	{3, "Get alexandrite", "Buy from Auriana, 50 poetics each", true, true, 50},
 }
 
 type ViewData struct {
@@ -44,6 +45,7 @@ func registerHandlers() {
 		logger.Info("hit /todo endpoint")
 
 		name := r.PostFormValue("name")
+		desc := r.PostFormValue("description")
 		hasCount := r.PostFormValue("has-count") == "true"
 		count := r.PostFormValue("count")
 
@@ -61,7 +63,7 @@ func registerHandlers() {
 
 		todoCount += 1
 		id := todoCount
-		todo := Todo{id, name, false, hasCount, intCount}
+		todo := Todo{id, name, desc, false, hasCount, intCount}
 		todos = append(todos, todo)
 
 		logger.Info("added todo: ", todo)
@@ -81,6 +83,7 @@ func registerHandlers() {
 		}
 
 		name := r.PostFormValue("name")
+		desc := r.PostFormValue("description")
 		count := r.PostFormValue("count")
 		done := r.PostFormValue("done") == "true"
 
@@ -110,6 +113,7 @@ func registerHandlers() {
 		}
 
 		todos[todoIdx].Name = name
+		todos[todoIdx].Description = desc
 		todos[todoIdx].Count = intCount
 		todos[todoIdx].Done = done
 		logger.Info("updated item: ", todos[todoIdx])
