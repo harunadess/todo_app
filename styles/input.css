@@ -55,6 +55,7 @@
   }
 }
 
+/* switch */
 @layer components {
   .switch {
     @apply relative inline-block w-[60px] h-[32px];
@@ -85,5 +86,28 @@
     -webkit-transform: translateX(26px);
     -ms-transform: translateX(26px);
     transform: translateX(26px);
+  }
+}
+
+/* form input */
+@layer components {
+  .form-input {
+    @apply px-2 py-1 caret-primary-200 border-1 border-solid border-surface-200  bg-surface-200 rounded-sm;
+
+    @variant dark {
+      @apply caret-dark-primary-200 border-dark-surface-200 bg-dark-surface-200;
+    }
+
+    @variant focus {
+      @apply ring-0 outline-none;
+    }
+
+    @variant placeholder {
+      @apply text-surface-600;
+
+      @variant dark {
+        @apply text-dark-surface-600;
+      }
+    }
   }
 }

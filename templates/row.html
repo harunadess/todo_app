@@ -1,5 +1,5 @@
 {{ define "row" }}
-<div id="task-{{ .ID }}" class="my-4 mx-auto max-w-lg rounded-xl p-6 bg-surface-tonal-200 dark:bg-dark-surface-200 text-white">
+<div id="task-{{ .ID }}" class="my-4 mx-auto max-w-lg rounded-xl p-6 bg-surface-tonal-200 dark:bg-dark-surface-200 text-white {{ if .Done }} opacity-50 {{ end }}">
   <div class="grid grid-cols-2">
     <div>
       <div class="mb-8">
@@ -19,11 +19,14 @@
         </div>
       </div>
       <div class="pt-8">
-        <button class="cursor-pointer mx-auto px-4 py-2 mr-2 rounded text-black bg-primary-100 dark:bg-primary-600"
-          hx-get="/todos/{{ .ID }}/edit">
+        <button
+          class="cursor-pointer mx-auto px-4 py-2 mr-2 rounded text-black bg-primary-100 dark:bg-primary-600 {{ if .Done }} disabled:cursor-default {{ end }}"
+          {{ if .Done }} disabled {{ end }}
+          hx-get="/todos/{{ .ID }}/edit" hx-target="#task-{{ .ID }}" hx-swap="outerHTML">
           Edit
         </button>
-        <button class="cursor-pointer mx-auto px-4 py-2 rounded text-black bg-primary-300 dark:bg-primary-300"
+        <button class="cursor-pointer mx-auto px-4 py-2 rounded text-black bg-primary-300 dark:bg-primary-300 {{ if .Done }} disabled:cursor-default {{ end }}"
+          {{ if .Done }} disabled {{ end }}
           hx-delete="/todos/{{ .ID }}" hx-target="#task-{{ .ID }}">
           Delete
         </button>
@@ -33,14 +36,16 @@
       {{ if .Done }}
         <button
           class="relative float-end cursor-pointer mx-auto px-4 py-2 mr-2 rounded text-black bg-primary-300 dark:bg-primary-300"
-          hx-put="/todos/{{ .ID }}/toggle-done?done=false"
+          hx-put="/todos/{{ .ID }}/toggledone?done=false"
+          hx-target="#task-{{ .ID }}"
         >
           ✔
         </button>
       {{ else if not .Done }}
         <button
           class="relative float-end cursor-pointer mx-auto px-4 py-2 mr-2 rounded text-black bg-primary-100 dark:bg-primary-600"
-          hx-put="/todos/{{ .ID }}/toggle-done?done=true"
+          hx-put="/todos/{{ .ID }}/toggledone?done=true"
+          hx-target="#task-{{ .ID }}"
         >
           ✖
         </button>

@@ -123,6 +123,37 @@ func registerHandlers() {
 		tmpl.ExecuteTemplate(w, "row", todo)
 	})
 
+	http.HandleFunc("PUT /todos/{id}/toggledone", func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		done := r.URL.Query().Get("done") == "true"
+		intId, err := strconv.Atoi(id)
+		if err != nil {
+			logger.Error("failed to convert id to int: ", err)
+			http.Error(w, "invalid id supplied: ", http.StatusBadRequest)
+			return
+		}
+
+		// get todo with id
+		todoIdx := -1
+		for i := range todos {
+			if todos[i].ID == intId {
+				todoIdx = i
+				break
+			}
+		}
+		if todoIdx == -1 {
+			http.Error(w, "todo id not found", http.StatusNotFound)
+			return
+		}
+
+		todos[todoIdx].Done = done
+		logger.Info("updated item: ", todos[todoIdx])
+
+		todo := todos[todoIdx]
+		tmpl := templates["row.html"]
+		tmpl.ExecuteTemplate(w, "row", todo)
+	})
+
 	http.HandleFunc("DELETE /todos/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
 		intId, err := strconv.Atoi(id)

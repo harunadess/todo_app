@@ -8,3 +8,14 @@ type Todo struct {
 	HasCount    bool
 	Count       int
 }
+
+type List struct {
+	ID            int
+	Name          string
+	CompletedDate string
+}
+
+type ListWithTodos struct {
+	List  List
+	Todos []Todo
+}
