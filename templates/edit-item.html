@@ -8,7 +8,7 @@
     <div class="flex flex-col my-4">
       <label class="block mb-1" for="name">Description</label>
       <textarea class="form-input" name="description" type="text" placeholder="Buy map from Auriana for 50 poetics..."
-        rows="3" value="{{ .Description }}"></textarea>
+        rows="3">{{ .Description }}</textarea>
     </div>
     <div class="flex flex-col mb-4">
       <p class="text-md">Has Count?</p>
@@ -21,7 +21,7 @@
       <label class="block mb-1" for="Count">Count</label>
       <input
         class="form-input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-        type="number" name="count" placeholder="50" value="{{ .Count }}" />
+        type="number" name="count" placeholder="50" value="{{ if .HasCount }} {{ .Count }} {{ end }}" />
     </div>
   <div>
     <button class="cursor-pointer mx-auto px-4 py-2 mr-2 rounded text-black bg-primary-100 dark:bg-primary-600"

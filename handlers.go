@@ -2,10 +2,10 @@ package main
 
 import (
 	"net/http"
-	"slices"
 	"strconv"
 
-	logger "github.com/harunadess/todo_app/logger"
+	entities "github.com/harunadess/todo_app/entities"
+	"github.com/harunadess/todo_app/logger"
 )
 
 func RegisterTodoHandlers() {
@@ -37,10 +37,14 @@ func addTodo(w http.ResponseWriter, r *http.Request) {
 		intCount = i
 	}
 
-	todoCount += 1
-	id := todoCount
-	todo := Todo{id, name, desc, false, hasCount, intCount}
-	todos = append(todos, todo)
+	todo := entities.Todo{ListID: 1, Name: name, Description: desc, Done: false, HasCount: hasCount, Count: intCount}
+	id, err := db.CreateTodo(todo)
+	if err != nil {
+		logger.Error("failed to create todo: ", err)
+		http.Error(w, "failed to create todo", http.StatusInternalServerError)
+		return
+	}
+	todo.ID = id
 
 	logger.Info("added todo: ", todo)
 	w.WriteHeader(http.StatusCreated)
@@ -51,7 +55,7 @@ func addTodo(w http.ResponseWriter, r *http.Request) {
 
 func updateTodo(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	intId, err := strconv.Atoi(id)
+	intId, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		logger.Error("failed to convert id to int: ", err)
 		http.Error(w, "invalid id supplied: ", http.StatusBadRequest)
@@ -60,131 +64,119 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
 
 	name := r.PostFormValue("name")
 	desc := r.PostFormValue("description")
+	hasCount := r.PostFormValue("has-count") == "true"
 	count := r.PostFormValue("count")
-	done := r.PostFormValue("done") == "true"
 
-	todoIdx := getIdxOfTodo(intId)
-	if todoIdx == -1 {
-		http.Error(w, "todo id not found", http.StatusNotFound)
+	intCount, err := strconv.Atoi(count)
+	if err != nil {
+		logger.Error("failed to convert count to int: ", err)
+		http.Error(w, "invalid count supplied: ", http.StatusBadRequest)
 		return
 	}
 
-	intCount := 0
-	if todos[todoIdx].HasCount {
-		i, err := strconv.Atoi(count)
-		if err != nil {
-			logger.Error("failed to convert count to int: ", err)
-			http.Error(w, "invalid count supplied", http.StatusBadRequest)
-			return
-		}
-
-		intCount = i
+	if !hasCount {
+		intCount = 0
 	}
 
-	todos[todoIdx].Name = name
-	todos[todoIdx].Description = desc
-	todos[todoIdx].Count = intCount
-	todos[todoIdx].Done = done
-	logger.Info("updated item: ", todos[todoIdx])
+	err = db.UpdateTodo(intId, name, desc, hasCount, intCount)
+	if err != nil {
+		logger.Error("failed to update todo: ", err)
+		http.Error(w, "failed to update todo", http.StatusInternalServerError)
+		return
+	}
 
-	todo := todos[todoIdx]
+	todo, err := db.GetTodo(intId)
+	if err != nil {
+		logger.Error("failed to get todo: ", err)
+		http.Error(w, "failed to get todo after update", http.StatusInternalServerError)
+		return
+	}
+
 	tmpl := templates["row.html"]
-	tmpl.ExecuteTemplate(w, "row", todo)
+	tmpl.ExecuteTemplate(w, "row", *todo)
 }
 
 func toggleDone(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	done := r.URL.Query().Get("done") == "true"
-	intId, err := strconv.Atoi(id)
+	intId, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		logger.Error("failed to convert id to int: ", err)
 		http.Error(w, "invalid id supplied: ", http.StatusBadRequest)
 		return
 	}
 
-	todoIdx := getIdxOfTodo(intId)
-	if todoIdx == -1 {
-		http.Error(w, "todo id not found", http.StatusNotFound)
+	err = db.ToggleTodoDone(intId, done)
+	if err != nil {
+		logger.Error("failed to toggle done: ", err)
+		http.Error(w, "failed to toggle done for todo", http.StatusInternalServerError)
+		return
+	}
+	logger.Info("updated todo: ", intId)
+
+	todo, err := db.GetTodo(intId)
+	if err != nil {
+		logger.Error("failed to get todo: ", err)
+		http.Error(w, "failed to get todo after toggle done", http.StatusInternalServerError)
 		return
 	}
 
-	todos[todoIdx].Done = done
-	logger.Info("updated item: ", todos[todoIdx])
-
-	todo := todos[todoIdx]
 	tmpl := templates["row.html"]
-	tmpl.ExecuteTemplate(w, "row", todo)
+	tmpl.ExecuteTemplate(w, "row", *todo)
 }
 
 func deleteTodo(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	intId, err := strconv.Atoi(id)
+	intId, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		logger.Error("failed to convert id to int: ", err)
 		http.Error(w, "invalid id supplied: ", http.StatusBadRequest)
 		return
 	}
 
-	logger.Info("received DELETE for todo: ", intId)
-
-	todoIdx := getIdxOfTodo(intId)
-	if todoIdx == -1 {
-		http.Error(w, "todo id not found", http.StatusNotFound)
+	err = db.DeleteTodo(intId)
+	if err != nil {
+		logger.Error("failed to delete todo: ", err)
+		http.Error(w, "failed to delete todo", http.StatusInternalServerError)
 		return
 	}
-	// remove todo from list
-	todos = slices.Delete(todos, todoIdx, todoIdx+1)
 }
 
 func getTodo(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	intId, err := strconv.Atoi(id)
+	intId, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		logger.Error("failed to convert id to int: ", err)
 		http.Error(w, "invalid id supplied: ", http.StatusBadRequest)
 		return
 	}
 
-	todoIdx := getIdxOfTodo(intId)
-	if todoIdx == -1 {
-		http.Error(w, "todo id not found", http.StatusNotFound)
+	todo, err := db.GetTodo(intId)
+	if err != nil {
+		logger.Error("failed to get todo: ", err)
+		http.Error(w, "failed to get todo", http.StatusInternalServerError)
 		return
 	}
-
-	todo := todos[todoIdx]
 	tmpl := templates["row.html"]
-	tmpl.ExecuteTemplate(w, "row", todo)
+	tmpl.ExecuteTemplate(w, "row", *todo)
 }
 
 func getEditView(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	intId, err := strconv.Atoi(id)
+	intId, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		logger.Error("failed to convert id to int: ", err)
 		http.Error(w, "invalid id supplied: ", http.StatusBadRequest)
 		return
 	}
 
-	todoIdx := getIdxOfTodo(intId)
-	if todoIdx == -1 {
-		http.Error(w, "todo id not found", http.StatusNotFound)
+	todo, err := db.GetTodo(intId)
+	if err != nil {
+		logger.Error("failed to get todo: ", err)
+		http.Error(w, "failed to get todo", http.StatusInternalServerError)
 		return
 	}
 
-	todo := todos[todoIdx]
 	tmpl := templates["edit-item.html"]
-	tmpl.ExecuteTemplate(w, "edit-item", todo)
-}
-
-// temp function to get idx of todo from static list
-func getIdxOfTodo(id int) int {
-	todoIdx := -1
-	for i := range todos {
-		if todos[i].ID == id {
-			todoIdx = i
-			break
-		}
-	}
-
-	return todoIdx
+	tmpl.ExecuteTemplate(w, "edit-item", *todo)
 }
