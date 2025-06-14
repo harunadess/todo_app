@@ -2,7 +2,11 @@
 tmp
 node_modules
 assets
+.vscode
 
 # file associations
 *.db
 *.exe
+
+# files
+todo_app
