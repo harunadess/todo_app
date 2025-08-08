@@ -24,10 +24,23 @@ func init() {
 		templates = make(map[string]*template.Template)
 	}
 
-	templates["index.html"] = template.Must(template.ParseFiles("templates/index.html", "templates/add-form.html", "templates/list.html", "templates/row.html"))
+	indexTmpls := []string{
+		"templates/index.html",
+		"templates/app.html",
+		"templates/add-form.html",
+		"templates/list.html",
+		"templates/row.html",
+		"templates/aside-nav.html",
+		"templates/nav-row.html",
+	}
+
+	templates["index.html"] = template.Must(template.ParseFiles(indexTmpls...))
+	templates["app.html"] = template.Must(template.ParseFiles("templates/app.html", "templates/aside-nav.html", "templates/nav-row.html", "templates/add-form.html", "templates/list.html"))
 	templates["list.html"] = template.Must(template.ParseFiles("templates/list.html", "templates/row.html"))
 	templates["row.html"] = template.Must(template.ParseFiles("templates/row.html"))
 	templates["edit-item.html"] = template.Must(template.ParseFiles("templates/edit-item.html"))
+	templates["aside-nav.html"] = template.Must(template.ParseFiles("templates/aside-nav.html", "templates/nav-row.html"))
+	templates["nav-row.html"] = template.Must(template.ParseFiles("templates/nav-row.html"))
 
 	db.Conn = database.OpenDbConnection()
 	db.SetUp()

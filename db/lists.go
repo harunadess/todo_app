@@ -53,10 +53,10 @@ func (db DB) GetAllLists() ([]entities.List, error) {
 	return lists, nil
 }
 
-func (db DB) CreateList(name string) (int64, error) {
+func (db DB) CreateList(list entities.List) (int64, error) {
 	sql := `INSERT INTO lists (name)
 			VALUES (?);`
-	result, err := db.Conn.Exec(sql, name)
+	result, err := db.Conn.Exec(sql, list.Name)
 	if err != nil {
 		logger.Error("failed to create list: ", err)
 		return -1, err
@@ -70,4 +70,42 @@ func (db DB) CreateList(name string) (int64, error) {
 
 	logger.Info("created list: ", id)
 	return id, nil
+}
+
+func (db DB) UpdateList(id int64, name string) error {
+	sql := `UPDATE lists
+			SET name = ?
+			WHERE id = ?;`
+	result, err := db.Conn.Exec(sql, name, id)
+	if err != nil {
+		logger.Error("failed to update list: ", err)
+		return err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		logger.Error("failed to get number of updated rows: ", err)
+		return nil
+	}
+
+	logger.Info("updated list with id: ", id, " rows affected: ", affected)
+	return nil
+}
+
+func (db DB) DeleteList(id int64) error {
+	sql := "DELETE FROM lists WHERE id = ?;"
+	result, err := db.Conn.Exec(sql, id)
+	if err != nil {
+		logger.Error("failed to delete list: ", err)
+		return nil
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		logger.Error("failed to get number of updated rows: ", err)
+		return nil
+	}
+
+	logger.Info("deleted list with id: ", id, " rows affected: ", affected)
+	return nil
 }

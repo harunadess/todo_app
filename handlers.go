@@ -17,6 +17,13 @@ func RegisterTodoHandlers() {
 	http.HandleFunc("GET /todos/{id}/edit", getEditView)
 }
 
+func RegisterListHandlers() {
+	http.HandleFunc("POST /lists", addList)
+	http.HandleFunc("PUT /lists/{id}", updateList)
+	http.HandleFunc("DELETE /lists/{id}", deleteList)
+	http.HandleFunc("GET /list/{id}/edit", getListEditView)
+}
+
 func addTodo(w http.ResponseWriter, r *http.Request) {
 	logger.Info("hit /todo endpoint")
 
@@ -180,3 +187,30 @@ func getEditView(w http.ResponseWriter, r *http.Request) {
 	tmpl := templates["edit-item.html"]
 	tmpl.ExecuteTemplate(w, "edit-item", *todo)
 }
+
+func addList(w http.ResponseWriter, r *http.Request) {
+	logger.Info("hit /todo endpoint")
+
+	name := r.PostFormValue("name")
+	list := entities.List{Name: name}
+	id, err := db.CreateList(list)
+	if err != nil {
+		logger.Error("failed to create list: ", err)
+		http.Error(w, "failed to create list", http.StatusInternalServerError)
+		return
+	}
+	list.ID = id
+
+	logger.Info("added list: ", list)
+	w.WriteHeader(http.StatusCreated)
+
+	// todo: need tmpl for list row
+	tmpl := templates["row.html"]
+	tmpl.ExecuteTemplate(w, "row", list)
+}
+
+func updateList(w http.ResponseWriter, r *http.Request) {}
+
+func deleteList(w http.ResponseWriter, r *http.Request) {}
+
+func getListEditView(w http.ResponseWriter, r *http.Request) {}

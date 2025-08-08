@@ -1,0 +1,7 @@
+{{ define "aside-nav" }}
+<aside class="fixed h-full w-40 z-1 top-0 left-0 overflow-x-hidden overflow-y-auto pt-8 bg-surface-200 dark:bg-dark-surface-200">
+  {{ range .Lists }}
+    {{ template "nav-row" . }}
+  {{ end }}
+</aside>
+{{ end }}
