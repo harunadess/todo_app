@@ -32,4 +32,6 @@ func (db DB) SetUp() {
 	if err != nil {
 		logger.Fatal("failed db setup: ", err)
 	}
+
+	// temp
 }

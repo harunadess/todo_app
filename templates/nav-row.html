@@ -1,7 +1,9 @@
 {{ define "nav-row" }}
 <div class="text-white">
   <div
-    class="px-4 py-2 cursor-pointer hover:bg-surface-tonal-200 hover:dark:bg-dark-surface-tonal-200 hover:text-primary-300 hover:dark:text-dark-primary-600">
+    class="px-4 py-2 cursor-pointer hover:bg-surface-tonal-200 hover:dark:bg-dark-surface-tonal-200 hover:text-primary-300 hover:dark:text-dark-primary-600"
+    hx-get="/lists/{{ .ID }}/todos" hx-target="#item-list"
+  >
     <p class="{{ if .Completed }} line-through {{ end }}">{{ .Name }}</p>
     <small>{{ .CompletedDate }}</small>
   </div>

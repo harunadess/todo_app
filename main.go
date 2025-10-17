@@ -21,26 +21,8 @@ var templates map[string]*template.Template
 
 func init() {
 	if templates == nil {
-		templates = make(map[string]*template.Template)
+		templates = GetTemplates()
 	}
-
-	indexTmpls := []string{
-		"templates/index.html",
-		"templates/app.html",
-		"templates/add-form.html",
-		"templates/list.html",
-		"templates/row.html",
-		"templates/aside-nav.html",
-		"templates/nav-row.html",
-	}
-
-	templates["index.html"] = template.Must(template.ParseFiles(indexTmpls...))
-	templates["app.html"] = template.Must(template.ParseFiles("templates/app.html", "templates/aside-nav.html", "templates/nav-row.html", "templates/add-form.html", "templates/list.html"))
-	templates["list.html"] = template.Must(template.ParseFiles("templates/list.html", "templates/row.html"))
-	templates["row.html"] = template.Must(template.ParseFiles("templates/row.html"))
-	templates["edit-item.html"] = template.Must(template.ParseFiles("templates/edit-item.html"))
-	templates["aside-nav.html"] = template.Must(template.ParseFiles("templates/aside-nav.html", "templates/nav-row.html"))
-	templates["nav-row.html"] = template.Must(template.ParseFiles("templates/nav-row.html"))
 
 	db.Conn = database.OpenDbConnection()
 	db.SetUp()
@@ -69,17 +51,7 @@ func registerDefaultHandler() {
 		if len(lists) == 0 {
 			logger.Info("STUB: we don't have any lists, so we pretending for now.")
 
-			list := entities.List{ID: 1, Name: "Temp List", Completed: false, CompletedDate: ""}
-			lists = append(lists, list)
-
-			todos, err := db.GetAllTodosInList(list.ID)
-			if err != nil {
-				logger.Error("failed to get todos for default list: ", list.ID, err)
-				http.Error(w, "failed to get todos for default list", http.StatusInternalServerError)
-				return
-			}
-
-			viewData := ViewData{Lists: lists, Todos: todos}
+			viewData := ViewData{Lists: lists, Todos: make([]entities.Todo, 0)}
 			tmpl := templates["index.html"]
 			tmpl.Execute(w, viewData)
 			return
@@ -99,6 +71,7 @@ func registerDefaultHandler() {
 
 func main() {
 	RegisterTodoHandlers()
+	RegisterListHandlers()
 	registerStaticHandler()
 	registerDefaultHandler()
 

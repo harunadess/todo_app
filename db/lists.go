@@ -18,7 +18,7 @@ func (db DB) SetUpListsTable() error {
 			id INTEGER PRIMARY KEY,
 			name TEXT NOT NULL,
 			completed INTEGER NOT NULL DEFAULT 0,
-			completed_date TEXT
+			completed_date TEXT NOT NULL
 		);
 	`)
 
@@ -39,7 +39,7 @@ func (db DB) GetAllLists() ([]entities.List, error) {
 	}
 	defer rows.Close()
 
-	var lists []entities.List
+	lists := make([]entities.List, 0)
 	for rows.Next() {
 		list := &entities.List{}
 		err := rows.Scan(&list.ID, &list.Name, &list.Completed, &list.CompletedDate)
@@ -54,9 +54,9 @@ func (db DB) GetAllLists() ([]entities.List, error) {
 }
 
 func (db DB) CreateList(list entities.List) (int64, error) {
-	sql := `INSERT INTO lists (name)
-			VALUES (?);`
-	result, err := db.Conn.Exec(sql, list.Name)
+	sql := `INSERT INTO lists (name, completed_date)
+			VALUES (?, ?);`
+	result, err := db.Conn.Exec(sql, list.Name, list.CompletedDate)
 	if err != nil {
 		logger.Error("failed to create list: ", err)
 		return -1, err
@@ -72,11 +72,11 @@ func (db DB) CreateList(list entities.List) (int64, error) {
 	return id, nil
 }
 
-func (db DB) UpdateList(id int64, name string) error {
+func (db DB) UpdateList(id int64, name string, completeDate string) error {
 	sql := `UPDATE lists
-			SET name = ?
+			SET name = ?, completed_date = ?
 			WHERE id = ?;`
-	result, err := db.Conn.Exec(sql, name, id)
+	result, err := db.Conn.Exec(sql, name, completeDate, id)
 	if err != nil {
 		logger.Error("failed to update list: ", err)
 		return err

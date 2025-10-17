@@ -18,6 +18,7 @@ func RegisterTodoHandlers() {
 }
 
 func RegisterListHandlers() {
+	http.HandleFunc("GET /lists/{id}/todos", getAllTodosInList)
 	http.HandleFunc("POST /lists", addList)
 	http.HandleFunc("PUT /lists/{id}", updateList)
 	http.HandleFunc("DELETE /lists/{id}", deleteList)
@@ -188,11 +189,32 @@ func getEditView(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "edit-item", *todo)
 }
 
+func getAllTodosInList(w http.ResponseWriter, r *http.Request) {
+	logger.Info("getAllTodosInList")
+	id := r.PathValue("id")
+	intId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		logger.Error("failed to convert id to int: ", err)
+		http.Error(w, "invalid id supplied: ", http.StatusBadRequest)
+		return
+	}
+
+	todos, err := db.GetAllTodosInList(intId)
+	if err != nil {
+		logger.Error("failed to get todo: ", err)
+		http.Error(w, "failed to get todo", http.StatusInternalServerError)
+		return
+	}
+	tmpl := templates["list.html"]
+	viewData := ViewData{Lists: make([]entities.List, 0), Todos: todos}
+	tmpl.ExecuteTemplate(w, "list", viewData)
+}
+
 func addList(w http.ResponseWriter, r *http.Request) {
 	logger.Info("hit /todo endpoint")
 
 	name := r.PostFormValue("name")
-	list := entities.List{Name: name}
+	list := entities.List{Name: name, CompletedDate: ""}
 	id, err := db.CreateList(list)
 	if err != nil {
 		logger.Error("failed to create list: ", err)
@@ -204,9 +226,8 @@ func addList(w http.ResponseWriter, r *http.Request) {
 	logger.Info("added list: ", list)
 	w.WriteHeader(http.StatusCreated)
 
-	// todo: need tmpl for list row
-	tmpl := templates["row.html"]
-	tmpl.ExecuteTemplate(w, "row", list)
+	tmpl := templates["nav-row.html"]
+	tmpl.ExecuteTemplate(w, "nav-row", list)
 }
 
 func updateList(w http.ResponseWriter, r *http.Request) {}
