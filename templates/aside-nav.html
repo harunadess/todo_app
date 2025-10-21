@@ -1,20 +1,21 @@
 {{ define "aside-nav" }}
-<aside class="fixed h-full w-40 z-1 top-0 left-0 overflow-x-hidden overflow-y-auto pt-8 bg-surface-200 dark:bg-dark-surface-200">
-  <div id="lists">
+<aside class="fixed h-full w-60 z-1 top-0 left-0 overflow-x-hidden overflow-y-auto pt-8 bg-surface-200 dark:bg-dark-surface-200">
+  <div id="lists" class="pt-4">
     {{ range .Lists }}
     {{ template "nav-row" . }}
     {{ end }}
   </div>
-  <div class="pt-2">
+  <div class="pt-6">
     <form
       class="p-1 w-full"
       hx-post="/lists" hx-target="#lists" hx-swap="beforeend"
       hx-on::after-request="if(event.detail.successful) this.reset()"
     >
-      <input class="form-input bg-surface-400 dark:bg-dark-surface-100 text-white max-w-full" name="name" type="text" placeholder="Chores..." required />
+      <input class="form-input bg-surface-400 dark:bg-dark-surface-100 text-white max-w-full" name="name" type="text" placeholder="New list..." required />
       <button
         class="cursor-pointer w-8 h-8 mt-2 float-end rounded-full text-white font-semibold bg-primary-500 dark:bg-primary-300"
-        type="submit">
+        type="submit"
+      >
         +
       </button>
     </form>
