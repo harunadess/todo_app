@@ -33,6 +33,19 @@ func addTodo(w http.ResponseWriter, r *http.Request) {
 	hasCount := r.PostFormValue("has-count") == "true"
 	count := r.PostFormValue("count")
 
+	listIdParam := r.URL.Query().Get("listId")
+	if len(listIdParam) == 0 {
+		logger.Error("listId was empty: ", listIdParam)
+		http.Error(w, "listId was empty", http.StatusBadRequest)
+		return
+	}
+	listId, err := strconv.ParseInt(listIdParam, 10, 64)
+	if err != nil {
+		logger.Error("failed to convert listId to int: ", err)
+		http.Error(w, "invalid listId supplied", http.StatusBadRequest)
+		return
+	}
+
 	intCount := 0
 	if hasCount {
 		i, err := strconv.Atoi(count)
@@ -45,7 +58,7 @@ func addTodo(w http.ResponseWriter, r *http.Request) {
 		intCount = i
 	}
 
-	todo := entities.Todo{ListID: 1, Name: name, Description: desc, Done: false, HasCount: hasCount, Count: intCount}
+	todo := entities.Todo{ListID: listId, Name: name, Description: desc, Done: false, HasCount: hasCount, Count: intCount}
 	id, err := db.CreateTodo(todo)
 	if err != nil {
 		logger.Error("failed to create todo: ", err)
@@ -190,7 +203,6 @@ func getEditView(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAllTodosInList(w http.ResponseWriter, r *http.Request) {
-	logger.Info("getAllTodosInList")
 	id := r.PathValue("id")
 	intId, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -205,9 +217,9 @@ func getAllTodosInList(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to get todo", http.StatusInternalServerError)
 		return
 	}
-	tmpl := templates["list.html"]
-	viewData := ViewData{Lists: make([]entities.List, 0), Todos: todos}
-	tmpl.ExecuteTemplate(w, "list", viewData)
+	tmpl := templates["item-content.html"]
+	viewData := ViewData{Lists: make([]entities.List, 0), Todos: todos, SelectedList: intId}
+	tmpl.ExecuteTemplate(w, "item-content", viewData)
 }
 
 func addList(w http.ResponseWriter, r *http.Request) {
@@ -232,6 +244,38 @@ func addList(w http.ResponseWriter, r *http.Request) {
 
 func updateList(w http.ResponseWriter, r *http.Request) {}
 
-func deleteList(w http.ResponseWriter, r *http.Request) {}
+/*
+On deleting of a list, need to fix this to return the entire view again (kind of)
+which might result in more db hits so we know what lists we have
+
+I don't really like that idea, so idk how to resolve this right now.
+*/
+func deleteList(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	intId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		logger.Error("failed to convert id to int: ", err)
+		http.Error(w, "invalid id supplied: ", http.StatusBadRequest)
+		return
+	}
+
+	err = db.DeleteAllTodosInList(intId)
+	if err != nil {
+		logger.Error("failed to delete todos: ", err)
+		http.Error(w, "failed to delete todos", http.StatusInternalServerError)
+		return
+	}
+
+	err = db.DeleteList(intId)
+	if err != nil {
+		logger.Error("failed to delete list: ", err)
+		http.Error(w, "failed to delete list", http.StatusInternalServerError)
+		return
+	}
+
+	tmpl := templates["item-content.html"]
+	viewData := ViewData{Lists: make([]entities.List, 0), Todos: make([]entities.Todo, 0), SelectedList: -1}
+	tmpl.ExecuteTemplate(w, "item-content", viewData)
+}
 
 func getListEditView(w http.ResponseWriter, r *http.Request) {}

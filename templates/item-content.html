@@ -1,0 +1,8 @@
+{{ define "item-content" }}
+<div id="item-content" class="p-4">
+  {{ if gt .SelectedList -1 }}
+    {{ template "add-form" . }}
+    {{ template "list" . }}
+  {{ end }}
+</div>
+{{ end }}

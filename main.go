@@ -13,8 +13,9 @@ import (
 var db database.DB
 
 type ViewData struct {
-	Lists []entities.List
-	Todos []entities.Todo
+	Lists        []entities.List
+	Todos        []entities.Todo
+	SelectedList int64
 }
 
 var templates map[string]*template.Template
@@ -51,7 +52,7 @@ func registerDefaultHandler() {
 		if len(lists) == 0 {
 			logger.Info("STUB: we don't have any lists, so we pretending for now.")
 
-			viewData := ViewData{Lists: lists, Todos: make([]entities.Todo, 0)}
+			viewData := ViewData{Lists: lists, Todos: make([]entities.Todo, 0), SelectedList: -1}
 			tmpl := templates["index.html"]
 			tmpl.Execute(w, viewData)
 			return
@@ -63,7 +64,7 @@ func registerDefaultHandler() {
 			http.Error(w, errStr, http.StatusInternalServerError)
 		}
 
-		viewData := ViewData{Lists: lists, Todos: todos}
+		viewData := ViewData{Lists: lists, Todos: todos, SelectedList: lists[0].ID}
 		tmpl := templates["index.html"]
 		tmpl.Execute(w, viewData)
 	})

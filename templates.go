@@ -10,6 +10,7 @@ var indexTmpls = []string{
 	"templates/row.html",
 	"templates/aside-nav.html",
 	"templates/nav-row.html",
+	"templates/item-content.html",
 }
 
 var appTmpls = []string{
@@ -18,6 +19,15 @@ var appTmpls = []string{
 	"templates/nav-row.html",
 	"templates/add-form.html",
 	"templates/list.html",
+	"templates/row.html",
+	"templates/item-content.html",
+}
+
+var itemContentTmpls = []string{
+	"templates/item-content.html",
+	"templates/add-form.html",
+	"templates/list.html",
+	"templates/row.html",
 }
 
 var listTmpls = []string{
@@ -47,6 +57,7 @@ func GetTemplates() map[string]*template.Template {
 
 	tmpl["index.html"] = template.Must(template.ParseFiles(indexTmpls...))
 	tmpl["app.html"] = template.Must(template.ParseFiles(appTmpls...))
+	tmpl["item-content.html"] = template.Must(template.ParseFiles(itemContentTmpls...))
 	tmpl["list.html"] = template.Must(template.ParseFiles(listTmpls...))
 	tmpl["row.html"] = template.Must(template.ParseFiles(rowTmpls...))
 	tmpl["edit-item.html"] = template.Must(template.ParseFiles(editItemTmpls...))

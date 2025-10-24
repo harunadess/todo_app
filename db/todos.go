@@ -103,6 +103,24 @@ func (db DB) DeleteTodo(id int64) error {
 	return nil
 }
 
+func (db DB) DeleteAllTodosInList(id int64) error {
+	sql := "DELETE FROM todos WHERE list_id = ?;"
+	result, err := db.Conn.Exec(sql, id)
+	if err != nil {
+		logger.Error("failed to delete todos: ", err)
+		return nil
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		logger.Error("failed to get number of updated rows: ", err)
+		return nil
+	}
+
+	logger.Info("deleted todos with list_id: ", id, " rows affected: ", affected)
+	return nil
+}
+
 func (db DB) GetAllTodosInList(listId int64) ([]entities.Todo, error) {
 	sql := "SELECT * FROM todos WHERE list_id = ? ORDER BY id;"
 	rows, err := db.Conn.Query(sql, listId)

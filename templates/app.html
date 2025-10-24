@@ -1,7 +1,4 @@
 {{ define "app" }}
   {{ template "aside-nav" . }}
-    <div class="p-4">
-      {{ template "add-form" }}
-      {{ template "list" .}}
-    </div>
+  {{ template "item-content" . }}
 {{ end }}
